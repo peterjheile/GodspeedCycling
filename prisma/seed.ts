@@ -1,13 +1,9 @@
-import { PrismaClient, EventType } from "@prisma/client";
+import { PrismaClient, EventType} from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function main() {
-
   await prisma.event.deleteMany();
-
-
-  // 👉 Mock events
   await prisma.event.createMany({
     data: [
       {
@@ -44,6 +40,30 @@ async function main() {
       },
     ],
   });
+
+  await prisma.member.deleteMany();
+  await prisma.member.createMany({
+    data: [
+      {
+        name: "Peter Heile",
+        email: "peter@example.com",
+        role: "RIDER",
+      },
+      {
+        name: "Alex Johnson",
+        email: "alex@example.com",
+        role: "COACH",
+      },
+      {
+        name: "Sam Lee",
+        email: "sam@example.com",
+        role: "MECHANIC",
+      },
+    ],
+  });
+
+
+
 }
 
 main()

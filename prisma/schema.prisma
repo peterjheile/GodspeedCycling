@@ -36,8 +36,6 @@ model Member {
 
 
 
-
-
 // ---------- Enums ----------
 enum EventType {
   TRAINING
