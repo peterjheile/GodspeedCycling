@@ -94,6 +94,11 @@ export default async function EventsPage() {
                     <Badge>
                       {typeToBadge(event.type)}
                     </Badge>
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/events/${event.id}/edit`}>
+                      Edit
+                    </Link>
+                  </Button>
                   </div>
                   <CardDescription className="text-xs">
                     {formatDateRange(
