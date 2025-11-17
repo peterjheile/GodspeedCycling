@@ -4,6 +4,10 @@ const prisma = new PrismaClient();
 
 async function main() {
   await prisma.event.deleteMany();
+  await prisma.ride.deleteMany()
+  await prisma.member.deleteMany();
+
+
   await prisma.event.createMany({
     data: [
       {
@@ -38,10 +42,33 @@ async function main() {
         location: "Peter's House",
         type: EventType.SOCIAL,
       },
+      {
+        name: "Tuesday Night Worlds",
+        description: "Hard training race simulation around Bloomington loop.",
+        startAt: new Date("2025-04-08T17:30:00"),
+        endAt: new Date("2025-04-08T19:00:00"),
+        location: "Sample Gates -> Bean Blossom loop",
+        type: EventType.TRAINING,
+      },
+      {
+        name: "Bloomington Crit",
+        description: "Downtown criterium, 45 minutes + 3 laps.",
+        startAt: new Date("2025-04-20T14:00:00"),
+        endAt: new Date("2025-04-20T15:30:00"),
+        location: "Downtown Bloomington",
+        type: EventType.RACE,
+      },
+      {
+        name: "Team Social Ride & Coffee",
+        description: "Easy spin and post-ride coffee. No-drop, all levels.",
+        startAt: new Date("2025-04-12T10:00:00"),
+        endAt: new Date("2025-04-12T12:00:00"),
+        location: "Hopscotch Coffee",
+        type: EventType.SOCIAL,
+      },
     ],
   });
 
-  await prisma.member.deleteMany();
   const peter = await prisma.member.create({
       data: {
         name: "Peter Heile",
