@@ -3,6 +3,9 @@ import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/ca
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+
 function formatDateRange(start: Date, end?: Date | null) {
   const startStr = start.toLocaleString("en-US", {
     weekday: "short",
@@ -58,6 +61,11 @@ export default async function EventsPage() {
         <p className="text-muted-foreground">
           Races, team rides, and social events for the Godspeed crew.
         </p>
+          <Button asChild>
+          <Link href="/events/new">
+            + Create event
+          </Link>
+        </Button>
       </div>
 
       {/* Upcoming events */}
