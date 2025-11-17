@@ -14,7 +14,7 @@ type RoutesMapProps = {
   routes: Route[];
 };
 
-export function RoutesMap({ routes }: RoutesMapProps) {
+export default function RoutesMap({ routes }: RoutesMapProps) {
   // Center around Bloomington
   const center: LatLngExpression = [39.1679, -86.523];
 

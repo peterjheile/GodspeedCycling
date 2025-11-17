@@ -1,4 +1,6 @@
-import { prisma } from "@/lib/db";
+import { prisma} from "@/lib/db";
+import Link from "next/link";
+import { MemberRole } from "@prisma/client";
 
 import {
   Card,
@@ -8,6 +10,26 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+
+
+
+function roleToLabel(role: MemberRole) {
+  switch (role) {
+    case "COACH":
+      return "Coach";
+    case "MECHANIC":
+      return "Mechanic";
+    case "MANAGER":
+      return "Manager";
+    case "ALUMNI":
+      return "Alumni";
+    case "OTHER":
+      return "Staff";
+    case "RIDER":
+    default:
+      return "Rider";
+  }
+}
 
 export default async function TeamPage() {
   const members = await prisma.member.findMany({
@@ -28,7 +50,15 @@ export default async function TeamPage() {
             <Card key={member.id}>
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle>{member.name}</CardTitle>
+                      <CardTitle className="flex items-center justify-between">
+      <Link
+        href={`/members/${member.id}`}
+        className="hover:underline"
+      >
+        {member.name}
+      </Link>
+      <Badge variant="outline">{roleToLabel(member.role)}</Badge>
+    </CardTitle>
                   {member.email && (
                     <CardDescription>{member.email}</CardDescription>
                   )}

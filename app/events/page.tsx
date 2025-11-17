@@ -89,8 +89,13 @@ export default async function EventsPage() {
                 <CardHeader className="space-y-1">
                   <div className="flex items-center justify-between gap-2">
                     <CardTitle className="line-clamp-1">
+                    <Link
+                      href={`/events/${event.id}`}
+                      className="hover:underline"
+                    >
                       {event.name}
-                    </CardTitle>
+                    </Link>
+                  </CardTitle>
                     <Badge>
                       {typeToBadge(event.type)}
                     </Badge>
