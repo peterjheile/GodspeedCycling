@@ -1,23 +1,22 @@
-import type { ReactNode } from "react";
-import Link from "next/link";
-import { getIsAdmin, destroyAdminSession } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import type { ReactNode } from "react"
+import Link from "next/link"
+import { isAdmin } from "@/lib/auth"
+import { redirect } from "next/navigation"
+import { Button } from "@/components/ui/button"
 
-type AppShellProps = {
-  children: ReactNode;
-};
-
+// Server action for logout
 async function logout() {
-  "use server";
-  await destroyAdminSession();
-  redirect("/admin/login");
+  "use server"
+  // NextAuth logout endpoint
+  redirect("/api/auth/signout?callbackUrl=/admin/login")
 }
 
+type AppShellProps = {
+  children: ReactNode
+}
 
 export async function AppShell({ children }: AppShellProps) {
-  const isAdmin = await getIsAdmin();
-
+  const admin = await isAdmin()
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50">
@@ -38,7 +37,7 @@ export async function AppShell({ children }: AppShellProps) {
           </nav>
 
           <div className="flex items-center gap-2">
-            {isAdmin ? (
+            {admin ? (
               <form action={logout}>
                 <Button type="submit" variant="outline" size="sm">
                   Logout
@@ -55,5 +54,5 @@ export async function AppShell({ children }: AppShellProps) {
 
       <main className="mx-auto max-w-5xl px-4 py-6">{children}</main>
     </div>
-  );
+  )
 }
