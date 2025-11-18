@@ -17,6 +17,7 @@ model User {
   image         String?
 
   role          UserRole  @default(USER)
+  passwordHash  String?   // <- NEW: hashed password, nullable for OAuth-only users
 
   accounts      Account[]
   sessions      Session[]
