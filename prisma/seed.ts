@@ -1,4 +1,5 @@
 import { PrismaClient, EventType, MemberRole } from "@prisma/client";
+import bcrypt from "bcryptjs"
 
 const prisma = new PrismaClient();
 
@@ -146,27 +147,35 @@ async function main() {
   });
 
 
+  const adminPassword = "godspeed-admin" // pick whatever you want
+
+  const adminPasswordHash = await bcrypt.hash(adminPassword, 10)
+
   await prisma.user.upsert({
-  where: { email: "admin1@godspeed.dev" },
-  update: {
-    role: "ADMIN",
-  },
-  create: {
-    email: "admin1@godspeed.dev",
-    name: "Godspeed Admin 1",
-    role: "ADMIN",
-  },
+    where: { email: "admin1@godspeed.dev" },
+    update: {
+      role: "ADMIN",
+      passwordHash: adminPasswordHash,
+    },
+    create: {
+      email: "admin1@godspeed.dev",
+      name: "Godspeed Admin 1",
+      role: "ADMIN",
+      passwordHash: adminPasswordHash,
+    },
   })
 
   await prisma.user.upsert({
     where: { email: "admin2@godspeed.dev" },
     update: {
       role: "ADMIN",
+      passwordHash: adminPasswordHash,
     },
     create: {
       email: "admin2@godspeed.dev",
       name: "Godspeed Admin 2",
       role: "ADMIN",
+      passwordHash: adminPasswordHash,
     },
   })
 
