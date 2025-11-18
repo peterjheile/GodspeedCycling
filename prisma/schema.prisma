@@ -162,4 +162,5 @@ enum RaceType {
 enum UserRole {
   USER
   ADMIN
+  SUPERADMIN
 }

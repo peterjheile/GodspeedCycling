@@ -24,20 +24,22 @@ export const authOptions: NextAuthOptions = {
 
         if (!email || !password) return null
 
-        // Look up user in Prisma
+        // Look up the user
         const user = await prisma.user.findUnique({
           where: { email },
         })
 
-        // Must exist and be ADMIN
-        if (!user || user.role !== "ADMIN") {
-          return null
-        }
+        if (!user) return null
+        if (user.role !== "ADMIN") return null
 
-        // For now, all admins share a master password
-        if (password !== ADMIN_MASTER_PASSWORD) {
-          return null
-        }
+        // Must have a passwordHash
+        if (!user.passwordHash) return null
+
+        // Compare password using bcrypt
+        const bcrypt = require("bcryptjs")
+        const isValid = await bcrypt.compare(password, user.passwordHash)
+
+        if (!isValid) return null
 
         return user
       },
