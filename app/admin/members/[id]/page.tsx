@@ -1,45 +1,50 @@
-import { Prisma, MemberRole } from "@prisma/client"
-import Link from "next/link"
-import { redirect, notFound } from "next/navigation"
-import { revalidatePath } from "next/cache"
+import { Prisma, MemberRole } from "@prisma/client";
+import Link from "next/link";
+import { redirect, notFound } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
-import { prisma } from "@/lib/db"
-import { requireAdmin } from "@/lib/auth"
+import { prisma } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
+import {
+  disconnectMemberStravaById,
+  deleteMemberStravaDataById,
+} from "@/lib/member-strava";
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { StravaInviteSection } from "./StravaInviteSection"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { StravaInviteSection } from "./StravaInviteSection";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+  process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 // --- Server action: update an existing member ---
 async function updateMemberAction(formData: FormData) {
-  "use server"
+  "use server";
 
-  await requireAdmin()
+  await requireAdmin();
 
-  const memberId = (formData.get("memberId") || "").toString()
-  const name = (formData.get("name") || "").toString().trim()
-  const emailRaw = (formData.get("email") || "").toString().trim()
-  const role = (formData.get("role") || "").toString() as MemberRole
-  const avatarUrlRaw = (formData.get("avatarUrl") || "").toString().trim()
-  const bioRaw = (formData.get("bio") || "").toString().trim()
+  const memberId = (formData.get("memberId") || "").toString();
+  const name = (formData.get("name") || "").toString().trim();
+  const emailRaw = (formData.get("email") || "").toString().trim();
+  const role = (formData.get("role") || "").toString() as MemberRole;
+  const avatarUrlRaw = (formData.get("avatarUrl") || "").toString().trim();
+  const bioRaw = (formData.get("bio") || "").toString().trim();
 
   if (!memberId) {
-    redirect("/admin/members?error=Invalid%20member%20id")
+    redirect("/admin/members?error=Invalid%20member%20id");
   }
 
   if (!name) {
-    redirect(`/admin/members/${memberId}?error=Name%20is%20required`)
+    redirect(`/admin/members/${memberId}?error=Name%20is%20required`);
   }
 
-  const email = emailRaw === "" ? null : emailRaw
-  const avatarUrl = avatarUrlRaw === "" ? null : avatarUrlRaw
-  const bio = bioRaw === "" ? null : bioRaw
+  const email = emailRaw === "" ? null : emailRaw;
+  const avatarUrl = avatarUrlRaw === "" ? null : avatarUrlRaw;
+  const bio = bioRaw === "" ? null : bioRaw;
 
   try {
     await prisma.member.update({
@@ -51,7 +56,7 @@ async function updateMemberAction(formData: FormData) {
         avatarUrl,
         bio,
       },
-    })
+    });
   } catch (err) {
     if (
       err instanceof Prisma.PrismaClientKnownRequestError &&
@@ -59,49 +64,84 @@ async function updateMemberAction(formData: FormData) {
     ) {
       redirect(
         `/admin/members/${memberId}?error=That%20email%20is%20already%20used%20by%20another%20member`
-      )
+      );
     }
-    console.error(err)
+    console.error(err);
     redirect(
       `/admin/members/${memberId}?error=Something%20went%20wrong.%20Please%20try%20again.`
-    )
+    );
   }
 
-  revalidatePath("/admin/members")
-  revalidatePath("/members")
+  revalidatePath("/admin/members");
+  revalidatePath("/members");
 
-  redirect("/admin/members")
+  redirect("/admin/members");
+}
+
+// --- Server action: disconnect Strava for this member ---
+async function disconnectStravaAction(formData: FormData) {
+  "use server";
+
+  await requireAdmin();
+
+  const memberId = (formData.get("memberId") || "").toString();
+  if (!memberId) {
+    throw new Error("Invalid member id");
+  }
+
+  await disconnectMemberStravaById(memberId);
+
+  revalidatePath(`/admin/members/${memberId}`);
+  revalidatePath("/admin/members");
+  revalidatePath("/members");
+}
+
+// --- Server action: delete Strava data for this member ---
+async function deleteStravaDataAction(formData: FormData) {
+  "use server";
+
+  await requireAdmin();
+
+  const memberId = (formData.get("memberId") || "").toString();
+  if (!memberId) {
+    throw new Error("Invalid member id");
+  }
+
+  await deleteMemberStravaDataById(memberId);
+
+  revalidatePath(`/admin/members/${memberId}`);
+  revalidatePath("/admin/members");
+  revalidatePath("/members");
 }
 
 type PageProps = {
-  params: Promise <{ id: string, error?: string }>
-}
+  params: Promise<{ id: string; error?: string }>;
+};
 
-export default async function EditMemberPage({params}: PageProps) {
+export default async function EditMemberPage({ params }: PageProps) {
   const { id, error } = await params;
 
-  await requireAdmin()
+  await requireAdmin();
 
   const member = await prisma.member.findUnique({
     where: { id },
-  })
+  });
 
   if (!member) {
-    notFound()
+    notFound();
   }
-
 
   const initialInviteUrl = member.stravaInviteToken
     ? `${BASE_URL}/strava/connect?token=${member.stravaInviteToken}`
-    : null
+    : null;
+
+  const hasStrava = !!member.stravaAthleteId;
 
   return (
     <div className="max-w-3xl mx-auto py-10 space-y-8">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Edit Member
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Edit Member</h1>
           <p className="text-muted-foreground mt-1 text-sm">
             Update details for {member.name}.
           </p>
@@ -118,6 +158,7 @@ export default async function EditMemberPage({params}: PageProps) {
         </div>
       )}
 
+      {/* Member details form */}
       <Card>
         <CardHeader>
           <CardTitle>Member details</CardTitle>
@@ -128,12 +169,7 @@ export default async function EditMemberPage({params}: PageProps) {
 
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                defaultValue={member.name}
-                required
-              />
+              <Input id="name" name="name" defaultValue={member.name} required />
             </div>
 
             <div className="space-y-2">
@@ -187,9 +223,7 @@ export default async function EditMemberPage({params}: PageProps) {
             <div className="space-y-2">
               <Label htmlFor="bio">
                 Bio{" "}
-                <span className="text-xs text-muted-foreground">
-                  (optional)
-                </span>
+                <span className="text-xs text-muted-foreground">(optional)</span>
               </Label>
               <Textarea
                 id="bio"
@@ -201,11 +235,7 @@ export default async function EditMemberPage({params}: PageProps) {
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                asChild
-              >
+              <Button type="button" variant="outline" asChild>
                 <Link href="/admin/members">Cancel</Link>
               </Button>
               <Button type="submit">Save changes</Button>
@@ -214,10 +244,64 @@ export default async function EditMemberPage({params}: PageProps) {
         </CardContent>
       </Card>
 
+      {/* Strava connection status + admin controls */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Strava connection</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 text-sm">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              {hasStrava ? (
+                <>
+                  <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/40">
+                    ● Strava connected
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
+                    This member&apos;s Strava account is linked and rides are syncing.
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Badge variant="outline">Not connected</Badge>
+                  <span className="text-xs text-muted-foreground">
+                    This member does not have Strava connected yet.
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+
+          {hasStrava && (
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <span className="text-xs text-muted-foreground">
+                You can disconnect Strava or delete all Strava data for this member.
+              </span>
+              <div className="flex flex-wrap gap-2">
+                <form action={disconnectStravaAction}>
+                  <input type="hidden" name="memberId" value={member.id} />
+                  <Button type="submit" variant="outline" size="sm">
+                    Disconnect Strava
+                  </Button>
+                </form>
+
+                <form action={deleteStravaDataAction}>
+                  <input type="hidden" name="memberId" value={member.id} />
+                  <Button type="submit" variant="destructive" size="sm">
+                    Delete Strava data
+                  </Button>
+                </form>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Existing Strava invite section */}
       <StravaInviteSection
         memberId={member.id}
         initialInviteUrl={initialInviteUrl}
       />
     </div>
-  )
+  );
 }
