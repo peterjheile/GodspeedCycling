@@ -86,6 +86,29 @@ model Member {
 
   rides       Ride[]
   raceresults RaceResult[]
+
+  // --- STRAVA FIELDS ---
+
+  /// The Strava athlete ID returned by their API
+  stravaAthleteId       Int?
+
+  /// Current access token for Strava API calls (short-lived)
+  stravaAccessToken     String?
+
+  /// Refresh token to get new access tokens (long-lived)
+  stravaRefreshToken    String?
+
+  /// When the current access token expires
+  stravaTokenExpiresAt  DateTime?
+
+  /// When the rider first connected Strava
+  stravaConnectedAt     DateTime?
+
+  /// One-time token used in email invite links like /strava/connect?token=...
+  stravaInviteToken     String?   @unique
+
+  /// When that invite token expires
+  stravaInviteExpiresAt DateTime?
 }
 
 model Ride {
