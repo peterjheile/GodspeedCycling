@@ -12,6 +12,7 @@ if (!ADMIN_MASTER_PASSWORD) {
   throw new Error("ADMIN_MASTER_PASSWORD is not set in env")
 }
 
+
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -29,7 +30,7 @@ export const authOptions: NextAuthOptions = {
 
         const user = await prisma.user.findUnique({ where: { email } })
         if (!user) return null
-        if (user.role === "USER") return null
+        if (user.role === "USER") return null // only ADMIN or SUPERADMIN may log in with this form
         if (!user.passwordHash) return null
 
         const bcrypt = require("bcryptjs")
@@ -40,6 +41,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
 
+    // 🔽 REPLACE your old StravaProvider with this:
     StravaProvider({
       clientId: process.env.STRAVA_CLIENT_ID!,
       clientSecret: process.env.STRAVA_CLIENT_SECRET!,
@@ -82,9 +84,11 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+
   session: {
     strategy: "jwt",
   },
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -101,5 +105,9 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
+  },
+
+  pages: {
+    signIn: "/admin/login",
   },
 }

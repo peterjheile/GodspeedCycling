@@ -84,41 +84,41 @@ model Member {
   avatarUrl   String?
   bio         String?
 
+  stravaAthleteId       String?
+  stravaAccessToken     String?
+  stravaRefreshToken    String?
+  stravaTokenExpiresAt  DateTime?
+  stravaConnectedAt     DateTime?
+  stravaInviteToken     String?
+  stravaInviteExpiresAt DateTime?
+
   rides       Ride[]
   raceresults RaceResult[]
 
-  // --- STRAVA FIELDS ---
 
-  /// The Strava athlete ID returned by their API
-  stravaAthleteId       Int?
-
-  /// Current access token for Strava API calls (short-lived)
-  stravaAccessToken     String?
-
-  /// Refresh token to get new access tokens (long-lived)
-  stravaRefreshToken    String?
-
-  /// When the current access token expires
-  stravaTokenExpiresAt  DateTime?
-
-  /// When the rider first connected Strava
-  stravaConnectedAt     DateTime?
-
-  /// One-time token used in email invite links like /strava/connect?token=...
-  stravaInviteToken     String?   @unique
-
-  /// When that invite token expires
-  stravaInviteExpiresAt DateTime?
 }
 
 model Ride {
-  id         String   @id @default(cuid())
-  member     Member   @relation(fields: [memberId], references: [id])
-  memberId   String
-  startedAt  DateTime
-  endedAt    DateTime
-  distanceKm Float?
-  polyline   String
+  id                String   @id @default(cuid())
+  memberId          String
+  member            Member   @relation(fields: [memberId], references: [id])
+
+  stravaActivityId  String   @unique
+
+  name              String
+  type              String
+  distanceMeters    Float
+  movingTimeSec     Int
+  elapsedTimeSec    Int
+  elevationGain     Float
+  startDate         DateTime
+
+  avgSpeed          Float?
+  maxSpeed          Float?
+  calories          Float?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model Race {

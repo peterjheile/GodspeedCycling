@@ -103,49 +103,49 @@ async function main() {
     new Date(now.getTime() - n * 24 * 60 * 60 * 1000);
 
   // --- Rides ---
-  await prisma.ride.createMany({
-    data: [
-      {
-        memberId: peter.id,
-        startedAt: daysAgo(3),
-        endedAt: daysAgo(3),
-        distanceKm: 25.4,
-        polyline: JSON.stringify([
-          [39.1679, -86.523],
-          [39.1695, -86.518],
-          [39.171, -86.522],
-          [39.169, -86.526],
-          [39.1679, -86.523],
-        ]),
-      },
-      {
-        memberId: sam.id,
-        startedAt: daysAgo(7),
-        endedAt: daysAgo(7),
-        distanceKm: 18.2,
-        polyline: JSON.stringify([
-          [39.1705, -86.526],
-          [39.1712, -86.523],
-          [39.17, -86.52],
-          [39.1688, -86.522],
-          [39.1705, -86.526],
-        ]),
-      },
-      {
-        memberId: peter.id,
-        startedAt: daysAgo(10),
-        endedAt: daysAgo(10),
-        distanceKm: 40.7,
-        polyline: JSON.stringify([
-          [39.167, -86.535],
-          [39.1685, -86.54],
-          [39.17, -86.538],
-          [39.1712, -86.532],
-          [39.1679, -86.523],
-        ]),
-      },
-    ],
-  });
+  // await prisma.ride.createMany({
+  //   data: [
+  //     {
+  //       memberId: peter.id,
+  //       startedAt: daysAgo(3),
+  //       endedAt: daysAgo(3),
+  //       distanceKm: 25.4,
+  //       polyline: JSON.stringify([
+  //         [39.1679, -86.523],
+  //         [39.1695, -86.518],
+  //         [39.171, -86.522],
+  //         [39.169, -86.526],
+  //         [39.1679, -86.523],
+  //       ]),
+  //     },
+  //     {
+  //       memberId: sam.id,
+  //       startedAt: daysAgo(7),
+  //       endedAt: daysAgo(7),
+  //       distanceKm: 18.2,
+  //       polyline: JSON.stringify([
+  //         [39.1705, -86.526],
+  //         [39.1712, -86.523],
+  //         [39.17, -86.52],
+  //         [39.1688, -86.522],
+  //         [39.1705, -86.526],
+  //       ]),
+  //     },
+  //     {
+  //       memberId: peter.id,
+  //       startedAt: daysAgo(10),
+  //       endedAt: daysAgo(10),
+  //       distanceKm: 40.7,
+  //       polyline: JSON.stringify([
+  //         [39.167, -86.535],
+  //         [39.1685, -86.54],
+  //         [39.17, -86.538],
+  //         [39.1712, -86.532],
+  //         [39.1679, -86.523],
+  //       ]),
+  //     },
+  //   ],
+  // });
 
 
   const adminPassword = "godspeed-admin" // pick whatever you want
