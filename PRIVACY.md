@@ -1,5 +1,5 @@
 # Privacy Policy — Godspeed Cycling Team Portal
-_Last updated: [DATE]_
+_Last updated: 11/19/2025_
 
 Godspeed Cycling (“we”, “our”, or “the App”) provides a team-oriented cycling platform that allows riders to connect their Strava accounts and share training activity data with coaches and staff. This Privacy Policy describes what information we collect, how we use it, and your choices.
 
@@ -76,7 +76,7 @@ You may request deletion of all imported Strava data at any time:
 
 - Through your “Manage Strava” page  
 - By asking a coach/staff member  
-- By emailing **[peterjheile@gmail.com]**
+- By emailing **peterjheile@gmail.com**
 
 When a deletion request is made, we will remove:
 
@@ -105,4 +105,4 @@ We may update this Privacy Policy from time to time. When we do, the “Last upd
 ## 8. Contact
 
 For any questions or concerns about this policy, contact:  
-**[peterjheile@gmail.com]**
+**peterjheile@gmail.com**

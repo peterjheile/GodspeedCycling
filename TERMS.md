@@ -1,5 +1,5 @@
 # Terms of Use — Godspeed Cycling Team Portal
-_Last updated: [DATE]_
+_Last updated: 11/19/2025_
 
 These Terms of Use (“Terms”) govern your access to and use of the Godspeed Cycling Team Portal (“the App”). By using the App, you agree to these Terms.
 
@@ -110,4 +110,4 @@ We may update these Terms occasionally. The updated date at the top of the page 
 ## 10. Contact
 
 For questions about these Terms, contact:  
-**[YOUR_EMAIL]**
+**peterjheile@gmail.com**
