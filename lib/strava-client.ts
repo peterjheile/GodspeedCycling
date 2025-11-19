@@ -88,6 +88,9 @@ export async function upsertRideFromStravaActivity(opts: {
 
   const activity = await res.json();
 
+  const map = activity.map ?? {};
+  const polyline: string | null = map.summary_polyline ?? map.polyline ?? null;
+
   // Map Strava response → Ride fields
   // Docs: distance in meters, times in seconds, elevation gain in meters, etc.
   // You can tweak to taste.
@@ -107,6 +110,8 @@ export async function upsertRideFromStravaActivity(opts: {
     calories: activity.kilojoules
       ? activity.kilojoules // or convert
       : activity.calories ?? null,
+
+    polyline,
   };
 
   await prisma.ride.upsert({

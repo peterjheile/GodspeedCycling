@@ -18,7 +18,7 @@ export default async function MapPage() {
   // You can later restrict this if the dataset grows huge
   const rides = await prisma.ride.findMany({
     include: { member: true },
-    orderBy: { startedAt: "desc" },
+    orderBy: { startDate: "desc" },
   });
 
   const routes: FilterableRoute[] = [];
@@ -44,9 +44,9 @@ export default async function MapPage() {
     }
 
     const memberName = ride.member?.name ?? "Unknown rider";
-    const startedAt = ride.startedAt.toISOString();
+    const startedAt = ride.startDate.toISOString();
 
-    const dateLabel = ride.startedAt.toLocaleDateString("en-US", {
+    const dateLabel = ride.startDate.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -61,7 +61,7 @@ export default async function MapPage() {
       memberId: ride.memberId,
       memberName,
       startedAt,
-      distanceKm: ride.distanceKm ?? null,
+      distanceKm: (ride.distanceMeters ?? 0) / 100
     });
   }
 
