@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ComponentType } from "react";
+import dynamic from "next/dynamic";
+
 import {
   Select,
   SelectTrigger,
@@ -11,7 +13,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import RoutesMap, { Route as MapRoute } from "./RoutesMap";
+
+// Import the type only, not the component itself
+import type { Route as MapRoute } from "./RoutesMap";
 
 type FilterableRoute = MapRoute & {
   memberId: string;
@@ -31,6 +35,11 @@ type MapWithFiltersProps = {
   routes: FilterableRoute[];
   members: MemberOption[];
 };
+
+// ✅ Dynamically import the Leaflet map component with ssr: false
+const RoutesMap = dynamic(() => import("./RoutesMap"), {
+  ssr: false,
+}) as ComponentType<{ routes: MapRoute[] }>;
 
 function getThreshold(range: TimeRange): Date | null {
   const now = new Date();
@@ -125,27 +134,27 @@ export default function MapWithFilters({
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Member filter */}
-        <div className="space-y-1">
+          <div className="space-y-1">
             <span className="text-xs font-medium text-muted-foreground">
-            Rider
+              Rider
             </span>
             <Select
-            value={selectedMemberId}
-            onValueChange={(value) => setSelectedMemberId(value)}
+              value={selectedMemberId}
+              onValueChange={(value) => setSelectedMemberId(value)}
             >
-            <SelectTrigger className="w-40">
+              <SelectTrigger className="w-40">
                 <SelectValue placeholder="Select rider" />
-            </SelectTrigger>
-            <SelectContent className="z-[1001]">
+              </SelectTrigger>
+              <SelectContent className="z-[1001]">
                 <SelectItem value="all">All riders</SelectItem>
                 {members.map((member) => (
-                <SelectItem key={member.id} value={member.id}>
+                  <SelectItem key={member.id} value={member.id}>
                     {member.name}
-                </SelectItem>
+                  </SelectItem>
                 ))}
-            </SelectContent>
+              </SelectContent>
             </Select>
-        </div>
+          </div>
 
           {/* Time range filter */}
           <div className="space-y-1">

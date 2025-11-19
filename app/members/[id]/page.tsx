@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { MemberRole } from "@prisma/client";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import polyline from "@mapbox/polyline";
 
 import {
   Card,
@@ -13,7 +14,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import RoutesMap, { Route as MapRoute } from "@/components/map/RoutesMap";
+import { Route as MapRoute } from "@/components/map/RoutesMap";
+import MemberRoutesMap from "@/components/map/MemberRoutesMap";
 
 type PageProps = {
   // in your setup, params is treated as a Promise
@@ -58,6 +60,17 @@ function formatRideDate(date: Date) {
   });
 }
 
+function formatDurationFromSeconds(seconds: number | null | undefined) {
+  if (!seconds || seconds <= 0) return "Unknown";
+
+  const mins = Math.round(seconds / 60);
+  if (mins < 60) return `${mins} min`;
+
+  const hours = Math.floor(mins / 60);
+  const remMins = mins % 60;
+  return remMins === 0 ? `${hours} h` : `${hours} h ${remMins} min`;
+}
+
 export default async function MemberProfilePage({ params }: PageProps) {
   const { id } = await params;
 
@@ -69,7 +82,7 @@ export default async function MemberProfilePage({ params }: PageProps) {
     where: { id },
     include: {
       rides: {
-        orderBy: { startedAt: "desc" },
+        orderBy: { startDate: "desc" },
       },
     },
   });
@@ -80,38 +93,47 @@ export default async function MemberProfilePage({ params }: PageProps) {
 
   // Build routes for this member's rides
   const routes: MapRoute[] = [];
-  let totalDistance = 0;
+  let totalDistanceKm = 0;
   const now = new Date();
 
   for (const ride of member.rides) {
     if (!ride.polyline) continue;
 
     let positions: [number, number][] = [];
+
     try {
-      const parsed = JSON.parse(ride.polyline) as [number, number][];
-      if (Array.isArray(parsed)) {
-        positions = parsed;
+      // 🔹 Decode Strava-encoded polyline -> [[lat, lng], ...]
+      const decoded = polyline.decode(ride.polyline) as [number, number][];
+      if (Array.isArray(decoded) && decoded.length > 0) {
+        positions = decoded.map(
+          ([lat, lng]) => [lat, lng] as [number, number]
+        );
       }
-    } catch {
+    } catch (e) {
+      console.error("Failed to decode polyline for ride", ride.id, e);
       continue;
     }
 
     if (positions.length === 0) continue;
 
-    const dateLabel = ride.startedAt.toLocaleDateString("en-US", {
+    const dateLabel = ride.startDate.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
     });
 
-    const distance = ride.distanceKm ?? 0;
-    totalDistance += distance;
+    const distanceKm =
+      typeof ride.distanceMeters === "number"
+        ? ride.distanceMeters / 1000 // meters -> km
+        : 0;
+
+    totalDistanceKm += distanceKm;
 
     routes.push({
       id: ride.id,
       label:
-        distance > 0
-          ? `${dateLabel} · ${distance.toFixed(1)} km`
+        distanceKm > 0
+          ? `${dateLabel} · ${distanceKm.toFixed(1)} km`
           : dateLabel,
       positions,
     });
@@ -120,14 +142,15 @@ export default async function MemberProfilePage({ params }: PageProps) {
   const totalRides = member.rides.length;
   const lastRide = member.rides[0] ?? null;
 
-  // optional: last 30 days stats
+  // optional: last 30 days stats (by ride count)
   const monthAgo = new Date(now);
   monthAgo.setMonth(monthAgo.getMonth() - 1);
   const ridesLastMonth = member.rides.filter(
-    (r) => r.startedAt >= monthAgo
+    (r) => r.startDate >= monthAgo
   ).length;
 
-  const totalDistanceRounded = totalDistance > 0 ? totalDistance.toFixed(1) : "0.0";
+  const totalDistanceRounded =
+    totalDistanceKm > 0 ? totalDistanceKm.toFixed(1) : "0.0";
 
   return (
     <div className="space-y-6">
@@ -181,17 +204,11 @@ export default async function MemberProfilePage({ params }: PageProps) {
           <CardContent>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">
-                  Total rides
-                </p>
-                <p className="text-xl font-semibold">
-                  {totalRides}
-                </p>
+                <p className="text-xs text-muted-foreground">Total rides</p>
+                <p className="text-xl font-semibold">{totalRides}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">
-                  Total distance
-                </p>
+                <p className="text-xs text-muted-foreground">Total distance</p>
                 <p className="text-xl font-semibold">
                   {totalDistanceRounded} km
                 </p>
@@ -200,17 +217,13 @@ export default async function MemberProfilePage({ params }: PageProps) {
                 <p className="text-xs text-muted-foreground">
                   Rides last 30 days
                 </p>
-                <p className="text-xl font-semibold">
-                  {ridesLastMonth}
-                </p>
+                <p className="text-xl font-semibold">{ridesLastMonth}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">
-                  Last ride
-                </p>
+                <p className="text-xs text-muted-foreground">Last ride</p>
                 <p className="text-sm font-medium">
                   {lastRide
-                    ? formatRideDate(lastRide.startedAt)
+                    ? formatRideDate(lastRide.startDate)
                     : "No rides yet"}
                 </p>
               </div>
@@ -233,7 +246,7 @@ export default async function MemberProfilePage({ params }: PageProps) {
               </div>
             ) : (
               <div className="h-64">
-                <RoutesMap routes={routes} />
+                <MemberRoutesMap routes={routes} />
               </div>
             )}
           </CardContent>
@@ -257,33 +270,37 @@ export default async function MemberProfilePage({ params }: PageProps) {
           </p>
         ) : (
           <div className="space-y-2">
-            {member.rides.slice(0, 5).map((ride) => (
-              <div
-                key={ride.id}
-                className="flex flex-col justify-between gap-1 rounded-lg border px-4 py-2 text-sm md:flex-row md:items-center"
-              >
-                <div className="space-y-1">
-                  <p className="font-medium">
-                    {formatRideDate(ride.startedAt)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Duration:{" "}
-                    {ride.endedAt
-                      ? `${Math.round(
-                          (ride.endedAt.getTime() -
-                            ride.startedAt.getTime()) /
-                            (1000 * 60)
-                        )} min`
-                      : "Unknown"}
-                  </p>
+            {member.rides.slice(0, 5).map((ride) => {
+              const distanceKm =
+                typeof ride.distanceMeters === "number"
+                  ? ride.distanceMeters / 1000
+                  : null;
+
+              const durationLabel = formatDurationFromSeconds(
+                ride.movingTimeSec ?? ride.elapsedTimeSec
+              );
+
+              return (
+                <div
+                  key={ride.id}
+                  className="flex flex-col justify-between gap-1 rounded-lg border px-4 py-2 text-sm md:flex-row md:items-center"
+                >
+                  <div className="space-y-1">
+                    <p className="font-medium">
+                      {formatRideDate(ride.startDate)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Duration: {durationLabel}
+                    </p>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {distanceKm
+                      ? `${distanceKm.toFixed(1)} km`
+                      : "Distance unknown"}
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {ride.distanceKm
-                    ? `${ride.distanceKm.toFixed(1)} km`
-                    : "Distance unknown"}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

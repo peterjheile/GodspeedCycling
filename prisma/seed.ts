@@ -8,6 +8,7 @@ async function main() {
   await prisma.ride.deleteMany()
   await prisma.member.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.account.deleteMany();
 
 
   await prisma.event.createMany({

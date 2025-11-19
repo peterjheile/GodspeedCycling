@@ -55,15 +55,39 @@ async function getValidAccessToken(member: Member): Promise<Member> {
 }
 
 // --- Activity fetch + map to Ride ---
+function mapStravaActivityToRideData(activity: any, memberId: string) {
+  const map = activity.map ?? {};
+  const polyline: string | null =
+    map.summary_polyline ?? map.polyline ?? null;
+
+  return {
+    memberId,
+    stravaActivityId: String(activity.id),
+    name: activity.name ?? "Ride",
+    type: activity.sport_type ?? activity.type ?? "Ride",
+    distanceMeters: activity.distance ?? 0,
+    movingTimeSec: activity.moving_time ?? 0,
+    elapsedTimeSec: activity.elapsed_time ?? 0,
+    elevationGain: activity.total_elevation_gain ?? 0,
+    startDate: new Date(activity.start_date),
+
+    avgSpeed: activity.average_speed ?? null,
+    maxSpeed: activity.max_speed ?? null,
+    calories: activity.kilojoules
+      ? activity.kilojoules
+      : activity.calories ?? null,
+
+    polyline,
+  };
+}
+
+
 
 export async function upsertRideFromStravaActivity(opts: {
   member: Member;
   stravaActivityId: number;
 }) {
-  let member = opts.member;
-
-  // Ensure we have a valid token
-  member = await getValidAccessToken(member);
+  let member = await getValidAccessToken(opts.member);
 
   const res = await fetch(
     `${STRAVA_BASE_URL}/activities/${opts.stravaActivityId}`,
@@ -71,8 +95,6 @@ export async function upsertRideFromStravaActivity(opts: {
       headers: {
         Authorization: `Bearer ${member.stravaAccessToken}`,
       },
-      // Strava wants GET
-      method: "GET",
     }
   );
 
@@ -87,36 +109,58 @@ export async function upsertRideFromStravaActivity(opts: {
   }
 
   const activity = await res.json();
-
-  const map = activity.map ?? {};
-  const polyline: string | null = map.summary_polyline ?? map.polyline ?? null;
-
-  // Map Strava response → Ride fields
-  // Docs: distance in meters, times in seconds, elevation gain in meters, etc.
-  // You can tweak to taste.
-  const rideData = {
-    memberId: member.id,
-    stravaActivityId: String(activity.id),
-    name: activity.name ?? "Ride",
-    type: activity.sport_type ?? activity.type ?? "Ride",
-    distanceMeters: activity.distance ?? 0,
-    movingTimeSec: activity.moving_time ?? 0,
-    elapsedTimeSec: activity.elapsed_time ?? 0,
-    elevationGain: activity.total_elevation_gain ?? 0,
-    startDate: new Date(activity.start_date),
-
-    avgSpeed: activity.average_speed ?? null,
-    maxSpeed: activity.max_speed ?? null,
-    calories: activity.kilojoules
-      ? activity.kilojoules // or convert
-      : activity.calories ?? null,
-
-    polyline,
-  };
+  const rideData = mapStravaActivityToRideData(activity, member.id);
 
   await prisma.ride.upsert({
     where: { stravaActivityId: rideData.stravaActivityId },
     update: rideData,
     create: rideData,
   });
+}
+
+export async function syncAllStravaRidesForMember(member: Member) {
+  // Make sure token is valid
+  let authMember = await getValidAccessToken(member);
+
+  const perPage = 100; // you can go up to 200
+  let page = 1;
+
+  while (true) {
+    const url = new URL(`${STRAVA_BASE_URL}/athlete/activities`);
+    url.searchParams.set("per_page", String(perPage));
+    url.searchParams.set("page", String(page));
+
+    const res = await fetch(url.toString(), {
+      headers: {
+        Authorization: `Bearer ${authMember.stravaAccessToken}`,
+      },
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Failed to list Strava activities", text);
+      break;
+    }
+
+    const activities = await res.json();
+
+    if (!Array.isArray(activities) || activities.length === 0) {
+      // No more activities
+      break;
+    }
+
+    // Upsert each activity into Ride
+    for (const activity of activities) {
+      console.log("Synching ride: ", activity);
+      const rideData = mapStravaActivityToRideData(activity, authMember.id);
+
+      await prisma.ride.upsert({
+        where: { stravaActivityId: rideData.stravaActivityId },
+        update: rideData,
+        create: rideData,
+      });
+    }
+
+    page += 1;
+  }
 }

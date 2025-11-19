@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import MapWithFilters from "@/components/map/MapWithFilters";
 import type { Route as MapRoute } from "@/components/map/RoutesMap";
+import polyline from "@mapbox/polyline";
 
 type FilterableRoute = MapRoute & {
   memberId: string;
@@ -28,12 +29,17 @@ export default async function MapPage() {
     if (!ride.polyline) continue;
 
     let positions: [number, number][] = [];
+
     try {
-      const parsed = JSON.parse(ride.polyline) as [number, number][];
-      if (Array.isArray(parsed)) {
-        positions = parsed;
+      // 🔹 Decode Strava-encoded polyline -> [[lat, lng], ...]
+      const decoded = polyline.decode(ride.polyline) as [number, number][];
+      if (Array.isArray(decoded) && decoded.length > 0) {
+        positions = decoded.map(
+          ([lat, lng]) => [lat, lng] as [number, number]
+        );
       }
-    } catch {
+    } catch (e) {
+      console.error("Failed to decode polyline for ride", ride.id, e);
       continue;
     }
 
@@ -54,14 +60,17 @@ export default async function MapPage() {
 
     routes.push({
       id: ride.id,
-      // These three are from MapRoute
+      // MapRoute fields
       label: `${memberName} · ${dateLabel}`,
       positions,
       // Extra fields for filtering
       memberId: ride.memberId,
       memberName,
       startedAt,
-      distanceKm: (ride.distanceMeters ?? 0) / 100
+      distanceKm:
+        typeof ride.distanceMeters === "number"
+          ? ride.distanceMeters / 1000 // 🔹 meters -> km
+          : null,
     });
   }
 
