@@ -1,113 +1,86 @@
 # Terms of Use — Godspeed Cycling Team Portal
 _Last updated: 11/19/2025_
 
-These Terms of Use (“Terms”) govern your access to and use of the Godspeed Cycling Team Portal (“the App”). By using the App, you agree to these Terms.
+These Terms describe how you can use the Godspeed Cycling Team Portal (“the site”). The purpose of this site is to share information about the team with the public and highlight our riders’ activity and achievements.
+
+By using the site or connecting Strava, you agree to the following.
 
 ---
 
-## 1. Purpose of the App
+## 1. Purpose of the Site
 
-The App provides training and team management tools for the Godspeed Cycling Team.  
-Features include:
+This site exists to:
 
-- Connecting Strava accounts  
-- Viewing training rides, maps, and statistics  
-- Displaying team ride summaries  
-- Providing public or team-visible rider profiles (only for connected riders)
+- Introduce the Godspeed Cycling Team to the public  
+- Showcase riders, rides, and team activity (when riders opt-in)
+- Provide basic visualizations like maps and distance summaries  
+- Maintain a simple roster of the team
 
----
-
-## 2. Eligibility
-
-You may use the App if:    
-
-- You are a rider, coach, staff member, or guest viewer associated with the team  
-- You agree to follow these Terms and applicable team guidelines
+This is **not** a training analysis tool.
 
 ---
 
-## 3. Strava Integration
+## 2. Strava Connection (Optional)
 
-When you connect your Strava account:
+If you choose to connect your Strava account:
 
-- You authorize us to access your Strava activities and related metrics  
-- You may disconnect at any time via Strava “My Apps” or the App’s manage page  
-- You may request the deletion of all imported Strava data at any time  
-- We never post to Strava or modify your Strava account in any way
+- You grant us permission to read your activities  
+- We never write, modify, or delete anything on Strava  
+- Your approved activities may appear on public pages  
+- You can disconnect at any time  
+- You can ask us to delete your synced data at any time
 
-See our Privacy Policy for details on how Strava data is used.
+If you never connect Strava, no activity data will be shown for you.
 
 ---
 
-## 4. Acceptable Use
+## 3. Acceptable Use
 
 You agree not to:
 
-- Access data you are not authorized to view  
-- Interfere with the security or performance of the App  
-- Reverse engineer or attempt to copy internal functionality  
-- Use the App for commercial advertising, scraping, or data resale  
-- Violate Strava’s API Terms or expose Strava data improperly
+- Try to access information you shouldn’t  
+- Interfere with the site or attempt to break security  
+- Reuse, scrape, or republish other members’ data without permission  
+- Misuse Strava data or violate Strava’s API rules in any way
 
 ---
 
-## 5. Public Profiles & Visibility
+## 4. Public Pages
 
-Activity data is shown only for riders who explicitly connect their Strava accounts.  
-Public or team-visible pages may display:
+Many parts of the site are publicly viewable.  
+If you choose to connect Strava, you are agreeing that:
 
-- Rider name  
-- Role  
-- Basic statistics (distance, elevation, recent rides)  
-- Maps of rides
+- Your ride summaries, maps, and basic stats may be visible publicly  
+- Only rides you have approved through Strava OAuth will appear  
+- You can remove this access whenever you want
 
-If you do not connect Strava, no activity data will be displayed for you.
-
----
-
-## 6. Termination
-
-We may suspend or terminate access for reasons including:
-
-- Security concerns  
-- Misuse of Strava data  
-- Violations of these Terms  
-- Team disciplinary decisions
-
-You may stop using the App at any time.
+We never display data from athletes who have not opted in.
 
 ---
 
-## 7. Disclaimer of Warranties
+## 5. Ending Your Participation
 
-The App is provided “as is” and “as available.”  
-We make no warranties regarding:
+You may stop using the site at any time.
 
-- Accuracy of data  
-- Uptime or availability  
-- Error-free functionality  
-
-Use of the App is at your own risk.
+You can revoke Strava access yourself or ask a team admin to help.  
+If you want all your Strava data removed, just ask.
 
 ---
 
-## 8. Limitation of Liability
+## 6. Disclaimer
 
-To the fullest extent permitted by law, we are not liable for:
-
-- Indirect, incidental, special, or consequential damages  
-- Loss of data or content  
-- Downtime or service interruptions  
+The site is provided “as is” without guarantees of accuracy or uptime.  
+We do our best, but things may occasionally break or be incomplete.
 
 ---
 
-## 9. Changes to These Terms
+## 7. Changes to These Terms
 
-We may update these Terms occasionally. The updated date at the top of the page indicates the most recent version.
+Updates may happen occasionally. The “Last updated” date above reflects the current version.
 
 ---
 
-## 10. Contact
+## 8. Contact
 
 For questions about these Terms, contact:  
 **peterjheile@gmail.com**
