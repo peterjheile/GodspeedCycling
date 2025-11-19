@@ -95,10 +95,11 @@ model Member {
   stravaInviteToken     String?
   stravaInviteExpiresAt DateTime?
 
+  //app generated disconnect link that an admin OR member can use to delete strava data/disconnect.
+  stravaDisconnectToken String?
+
   rides       Ride[]
   raceresults RaceResult[]
-
-
 }
 
 model Ride {
