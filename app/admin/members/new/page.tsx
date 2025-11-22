@@ -68,13 +68,13 @@ async function createMemberAction(formData: FormData) {
 }
 
 type PageProps = {
-  searchParams?: { error?: string }
+  searchParams: Promise<{ error?: string }>
 }
 
 export default async function NewMemberPage({ searchParams }: PageProps) {
   await requireAdmin()
 
-  const error = searchParams?.error
+  const { error } = await searchParams
 
   return (
     <div className="max-w-3xl mx-auto py-10 space-y-8">
