@@ -6,13 +6,6 @@ import { prisma } from "@/lib/db"
 import StravaProvider from "next-auth/providers/strava"
 
 
-const ADMIN_MASTER_PASSWORD = process.env.ADMIN_MASTER_PASSWORD
-
-if (!ADMIN_MASTER_PASSWORD) {
-  throw new Error("ADMIN_MASTER_PASSWORD is not set in env")
-}
-
-
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
