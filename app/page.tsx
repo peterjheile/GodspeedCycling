@@ -30,7 +30,7 @@ export default function HomePage() {
       {/* Info block */}
       <div className="relative z-10 max-w-lg space-y-4 p-8 md:p-12 lg:p-16 text-left">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-300">
-          Godspeed Biking
+          Godspeed Cycling
         </p>
 
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-snug text-white">
