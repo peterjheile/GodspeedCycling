@@ -19,7 +19,7 @@ export async function AppShell({ children }: AppShellProps) {
   const admin = await isAdmin()
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
+    <div className="min-h-screen bg-slate-950 text-slate-50 overflow-x-hidden">
       <header className="border-b border-slate-800 bg-slate-900/70 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           {/* Logo */}
