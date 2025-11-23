@@ -4,7 +4,7 @@ import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 
 export const metadata: Metadata = {
-  title: "Godspeed Biking",
+  title: "Godspeed Cycling",
   description: "A clean, modern dashboard for the Godspeed biking team.",
 };
 

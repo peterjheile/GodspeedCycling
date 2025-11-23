@@ -1,10 +1,10 @@
 import type { ReactNode } from "react"
 import Link from "next/link"
-import { isAdmin } from "@/lib/auth"
 import { redirect } from "next/navigation"
+import { isAdmin } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
+import { MobileNav } from "@/components/layout/MobileNav"
 
-// Server action for logout
 async function logout() {
   "use server"
   // NextAuth logout endpoint
@@ -19,14 +19,16 @@ export async function AppShell({ children }: AppShellProps) {
   const admin = await isAdmin()
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
+    <div className="min-h-screen bg-slate-950 text-slate-50 overflow-x-hidden">
       <header className="border-b border-slate-800 bg-slate-900/70 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+          {/* Logo */}
           <Link href="/" className="text-lg font-semibold tracking-tight">
             Godspeed
           </Link>
 
-          <nav className="flex gap-6 text-sm text-slate-300">
+          {/* Desktop nav */}
+          <nav className="hidden md:flex gap-6 text-sm text-slate-300">
             <Link href="/" className="hover:text-white">Home</Link>
             <Link href="/history" className="hover:text-white">History</Link>
             <Link href="/members" className="hover:text-white">Members</Link>
@@ -36,23 +38,27 @@ export async function AppShell({ children }: AppShellProps) {
             <Link href="/map" className="hover:text-white">Map</Link>
           </nav>
 
+          {/* Right side: logout (if admin) + mobile hamburger */}
           <div className="flex items-center gap-2">
-            {admin ? (
+            {admin && (
               <form action={logout}>
                 <Button type="submit" variant="outline" size="sm">
                   Logout
                 </Button>
               </form>
-            ) : (
-              <Button asChild variant="outline" size="sm">
-                <Link href="/admin/login">Admin login</Link>
-              </Button>
             )}
+
+            {/* Mobile nav (hamburger + dropdown) */}
+            <div className="md:hidden">
+              <MobileNav />
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-6">{children}</main>
+      <main className="mx-auto max-w-5xl px-4 py-6">
+        {children}
+      </main>
     </div>
   )
 }
