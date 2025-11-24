@@ -38,7 +38,7 @@ export default function HomePage() {
         </h1>
 
         <p className="text-sm md:text-base text-slate-200">
-          Join us in our mission to foster faith, commuinity, and fitness through the joy of cycling.
+          Join us in our mission to foster community, faith, and fitness through the joy of cycling.
         </p>
 
         <div className="flex gap-3 pt-2">
@@ -49,12 +49,12 @@ export default function HomePage() {
             Dashboard
           </Link>
 
-          <button
-            type="button"
+          <Link
+            href="/events"
             className="rounded-md border border-slate-300/40 px-4 py-2 text-sm font-medium text-slate-100 transition hover:border-slate-200"
           >
-            Roadmap
-          </button>
+            Events
+          </Link>
         </div>
       </div>
     </section>

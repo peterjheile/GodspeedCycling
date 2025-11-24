@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { isAdmin } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { MobileNav } from "@/components/layout/MobileNav"
+import { MainNav } from "@/components/layout/MainNav" // ⬅️ new
 
 // Server action for desktop logout
 async function logout() {
@@ -33,7 +34,7 @@ export async function AppShell({ children }: AppShellProps) {
             className="flex items-center gap-2 text-base font-semibold tracking-tight text-slate-50 hover:text-white"
           >
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-950 shadow-sm overflow-hidden">
-            <img src="/icon.png" className="h-5 w-5 object-contain" />
+              <img src="/icon.png" className="h-5 w-5 object-contain" />
             </span>
             <span className="flex flex-col leading-tight">
               <span>Godspeed Cycling</span>
@@ -43,55 +44,11 @@ export async function AppShell({ children }: AppShellProps) {
             </span>
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-5 text-sm text-slate-300">
-            <Link
-              href="/"
-              className="rounded-md px-2 py-1 transition hover:bg-slate-800/70 hover:text-white"
-            >
-              Home
-            </Link>
-            <Link
-              href="/history"
-              className="rounded-md px-2 py-1 transition hover:bg-slate-800/70 hover:text-white"
-            >
-              History
-            </Link>
-            <Link
-              href="/members"
-              className="rounded-md px-2 py-1 transition hover:bg-slate-800/70 hover:text-white"
-            >
-              Members
-            </Link>
-            <Link
-              href="/results"
-              className="rounded-md px-2 py-1 transition hover:bg-slate-800/70 hover:text-white"
-            >
-              Results
-            </Link>
-            <Link
-              href="/dashboard"
-              className="rounded-md px-2 py-1 transition hover:bg-slate-800/70 hover:text-white"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/events"
-              className="rounded-md px-2 py-1 transition hover:bg-slate-800/70 hover:text-white"
-            >
-              Events
-            </Link>
-            <Link
-              href="/map"
-              className="rounded-md px-2 py-1 transition hover:bg-slate-800/70 hover:text-white"
-            >
-              Map
-            </Link>
-          </nav>
+          {/* Desktop nav with active state */}
+          <MainNav />
 
           {/* Right side: desktop logout + mobile nav trigger */}
           <div className="flex items-center gap-2">
-            {/* Desktop logout */}
             {admin && (
               <form action={logout} className="hidden md:block">
                 <Button
@@ -105,7 +62,6 @@ export async function AppShell({ children }: AppShellProps) {
               </form>
             )}
 
-            {/* Mobile menu (handles its own md:hidden inside) */}
             <MobileNav admin={admin} />
           </div>
         </div>
