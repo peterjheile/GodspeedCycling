@@ -10,6 +10,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import type { Route } from "next"
 
 type MobileNavProps = {
   admin: boolean
@@ -18,7 +19,7 @@ type MobileNavProps = {
 export function MobileNav({ admin }: MobileNavProps) {
   const [open, setOpen] = useState(false)
 
-  const links = [
+  const links :{ href: Route; label: string }[] = [
     { href: "/", label: "Home" },
     { href: "/history", label: "History" },
     { href: "/members", label: "Members" },
@@ -80,7 +81,7 @@ export function MobileNav({ admin }: MobileNavProps) {
                 onClick={close}
                 className="rounded-md px-2 py-1.5 text-sm font-medium text-slate-200 hover:bg-slate-800 hover:text-white"
               >
-                {link.label}
+                <span onClick={close}>{link.label}</span>
               </Link>
             ))}
           </div>
