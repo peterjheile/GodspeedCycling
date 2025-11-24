@@ -27,7 +27,7 @@ export default function RoutesMap({ routes }: RoutesMapProps) {
         center={firstPoint}
         zoom={13}
         scrollWheelZoom
-        className="w-full h-full"
+        className="w-full h-full z-10"
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

@@ -145,7 +145,7 @@ export default function MapWithFilters({
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Select rider" />
               </SelectTrigger>
-              <SelectContent className="z-[1001]">
+              <SelectContent className="z-30">
                 <SelectItem value="all">All riders</SelectItem>
                 {members.map((member) => (
                   <SelectItem key={member.id} value={member.id}>

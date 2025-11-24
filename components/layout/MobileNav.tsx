@@ -2,57 +2,96 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 
-export function MobileNav() {
+type MobileNavProps = {
+  admin: boolean
+}
+
+export function MobileNav({ admin }: MobileNavProps) {
   const [open, setOpen] = useState(false)
 
-  const toggle = () => setOpen((prev) => !prev)
+  const links = [
+    { href: "/", label: "Home" },
+    { href: "/history", label: "History" },
+    { href: "/members", label: "Members" },
+    { href: "/results", label: "Results" },
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/events", label: "Events" },
+    { href: "/map", label: "Map" },
+  ]
+
   const close = () => setOpen(false)
 
   return (
-    <>
-      {/* Hamburger button */}
-      <button
-        type="button"
-        onClick={toggle}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-700 bg-slate-900/80 hover:bg-slate-800"
-      >
-        <span className="sr-only">Toggle navigation</span>
-        <div className="space-y-1">
-          <span className="block h-0.5 w-5 bg-slate-200" />
-          <span className="block h-0.5 w-5 bg-slate-200" />
-          <span className="block h-0.5 w-5 bg-slate-200" />
-        </div>
-      </button>
-
-      {/* Dropdown menu */}
-      {open && (
-        <nav className="absolute left-0 right-0 top-[56px] z-20 border-t border-slate-800 bg-slate-900/95 px-4 pb-4 pt-3 text-sm text-slate-300 md:hidden">
-          <div className="mx-auto flex max-w-5xl flex-col gap-2">
-            <Link href="/" onClick={close} className="px-1 py-1.5 hover:text-white">
-              Home
-            </Link>
-            <Link href="/history" onClick={close} className="px-1 py-1.5 hover:text-white">
-              History
-            </Link>
-            <Link href="/members" onClick={close} className="px-1 py-1.5 hover:text-white">
-              Members
-            </Link>
-            <Link href="/results" onClick={close} className="px-1 py-1.5 hover:text-white">
-              Results
-            </Link>
-            <Link href="/dashboard" onClick={close} className="px-1 py-1.5 hover:text-white">
-              Dashboard
-            </Link>
-            <Link href="/events" onClick={close} className="px-1 py-1.5 hover:text-white">
-              Events
-            </Link>
-            <Link href="/map" onClick={close} className="px-1 py-1.5 hover:text-white">
-              Map
-            </Link>
-          </div>
-        </nav>
+    <div className="flex items-center gap-2 md:hidden z-50">
+      {/* Mobile logout next to menu button */}
+      {admin && (
+        <form action="/api/auth/signout?callbackUrl=/admin/login" method="post">
+          <Button size="sm" variant="outline">
+            Logout
+          </Button>
+        </form>
       )}
-    </>
+
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="icon" className="border-slate-700 bg-slate-900">
+            <span className="sr-only">Open navigation</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              fill="none"
+            >
+              <path strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </Button>
+        </SheetTrigger>
+
+        <SheetContent
+          side="left"
+          className="w-64 bg-slate-950 text-slate-50 border-slate-800"
+          aria-describedby={undefined}
+        >
+          <SheetHeader className="text-left">
+            <SheetTitle className="text-base font-semibold tracking-tight">
+              Godspeed Cycling
+            </SheetTitle>
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+              Team Portal
+            </p>
+          </SheetHeader>
+
+          <div className="mt-6 flex flex-col gap-3">
+            {links.map(link => (
+              <Link
+                key={link.href}
+                href={link.href}
+                passHref={true}
+                onClick={close}
+                className="rounded-md px-2 py-1.5 text-sm font-medium text-slate-200 hover:bg-slate-800 hover:text-white"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {admin && (
+            <div className="mt-8 border-t border-slate-800 pt-4 text-xs text-slate-400">
+              Logged in as admin
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+    </div>
   )
 }
