@@ -34,11 +34,11 @@ export default function HomePage() {
         </p>
 
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-snug text-white">
-          Team rides, stats, and events.
+          Welcome to the Hoosier Catholic Cycling Team.
         </h1>
 
         <p className="text-sm md:text-base text-slate-200">
-          Keep your squad in sync and track progress over the season.
+          Join us in our mission to foster faith, commuinity, and fitness through the joy of cycling.
         </p>
 
         <div className="flex gap-3 pt-2">
