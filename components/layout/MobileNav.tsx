@@ -11,12 +11,14 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import type { Route } from "next"
+import { usePathname } from "next/navigation"
 
 type MobileNavProps = {
   admin: boolean
 }
 
 export function MobileNav({ admin }: MobileNavProps) {
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
 
   const links :{ href: Route; label: string }[] = [
@@ -72,18 +74,31 @@ export function MobileNav({ admin }: MobileNavProps) {
             </p>
           </SheetHeader>
 
+          
+
           <div className="mt-6 flex flex-col gap-3">
-            {links.map(link => (
+            {links.map(link => {
+
+            const isActive =
+              pathname === link.href ||
+              (link.href !== "/" && pathname.startsWith(link.href))
+
+              return (
               <Link
                 key={link.href}
                 href={link.href}
                 passHref={true}
                 onClick={close}
-                className="rounded-md px-2 py-1.5 text-sm font-medium text-slate-200 hover:bg-slate-800 hover:text-white"
-              >
+                className={`
+                  rounded-r-md px-2 py-1.5 text-sm font-medium text-slate-200 hover:bg-slate-800 hover:text-white
+                  ${isActive? "border-l-2 border-green-400 rounded-none py-1" : ""}
+                  `}
+                >
+                
+              
                 <span onClick={close}>{link.label}</span>
-              </Link>
-            ))}
+              </Link>)
+            })}
           </div>
 
           {admin && (
